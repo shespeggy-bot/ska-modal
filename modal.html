@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>弹窗1 — Figma 0:2</title>
+    <style>
+      /* ========== Figma「弹窗1」node 0:2 — 设计稿常量 ========== */
+      :root {
+        --fig-bg: #757575;
+        --fig-overlay: rgba(0, 0, 0, 0.52);
+        --fig-artboard-w: 750px;
+        --fig-group-w: 534px;
+        --fig-group-h: 623px;
+        --fig-card-h: 580px;
+        --fig-card-radius: 24px;
+        --fig-headline: #020814;
+        --fig-accent: #ff5037;
+        --fig-btn-w: 358px;
+        --fig-btn-h: 80px;
+        --fig-btn-radius: 64px;
+        --fig-field-w: 354px;
+        --fig-field-h: 60px;
+        --fig-field-radius: 8px;
+        --fig-gradient: linear-gradient(
+          162.473deg,
+          rgb(255, 174, 219) 11.841%,
+          rgb(255, 0, 0) 42.023%,
+          rgb(255, 127, 0) 89.377%
+        );
+        --fig-ribbon-left: 82px;
+        --fig-ribbon-w: 366px;
+        --fig-ribbon-h: 100px;
+        --fig-title-size: 58.123px;
+        --fig-title-shadow: 0 2.906px 2.906px rgba(100, 100, 100, 0.13);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        font-family: "PingFang SC", -apple-system, system-ui, "Microsoft YaHei",
+          sans-serif;
+        background: var(--fig-bg);
+        color: #000;
+      }
+
+      /* 750 设计宽度，居中；小屏铺满 */
+      .fig-page {
+        position: relative;
+        width: 100%;
+        max-width: var(--fig-artboard-w);
+        min-height: 100dvh;
+        margin: 0 auto;
+        background: var(--fig-bg);
+      }
+
+      /* 0:3 遮罩 750×全高 */
+      .fig-overlay {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: min(var(--fig-artboard-w), 100%);
+        height: 100%;
+        min-height: 100dvh;
+        background: var(--fig-overlay);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .fig-stage {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        padding: max(24px, env(safe-area-inset-top))
+          max(16px, env(safe-area-inset-right))
+          max(24px, env(safe-area-inset-bottom))
+          max(16px, env(safe-area-inset-left));
+      }
+
+      /* 0:4 组 1 — 534×623 */
+      .fig-group {
+        position: relative;
+        width: min(var(--fig-group-w), 100%);
+        min-height: var(--fig-group-h);
+        flex-shrink: 0;
+      }
+
+      /* 0:5 白底卡片 534×580，贴组底部 */
+      .fig-card {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: min(var(--fig-group-w), 100%);
+        height: var(--fig-card-h);
+        border-radius: var(--fig-card-radius);
+        background: #fff;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+        overflow: visible;
+        z-index: 2;
+      }
+
+      /* 0:6 蒙版组 205 — 与卡片同尺寸叠放 */
+      .fig-card-mask {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--fig-card-radius);
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .fig-card-mask img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+      }
+
+      /* 内容在蒙版之上 */
+      .fig-card-content {
+        position: relative;
+        z-index: 3;
+        height: 100%;
+      }
+
+      /* 0:11 组 101582 — 366×100，距组左 82、顶 0（与卡片同级，叠在卡片之上） */
+      .fig-ribbon {
+        position: absolute;
+        left: var(--fig-ribbon-left);
+        top: 0;
+        z-index: 4;
+        width: min(var(--fig-ribbon-w), calc(100% - var(--fig-ribbon-left)));
+        height: var(--fig-ribbon-h);
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      /* Figma 1:2 / 1:3 导出位图位置 */
+      .fig-ribbon__img--a {
+        position: absolute;
+        left: 0;
+        top: 5px;
+        width: 50px;
+        height: 80px;
+        object-fit: cover;
+      }
+      .fig-ribbon__img--b {
+        position: absolute;
+        left: 320px;
+        top: 3px;
+        width: 49px;
+        height: 82px;
+        object-fit: cover;
+      }
+
+      /* 0:12 填写 / 信息 — MF YuanHei，稿中 58.123px */
+      .fig-ribbon__title {
+        position: absolute;
+        left: calc(50% + 2.5px);
+        top: 12px;
+        transform: translateX(-50%);
+        margin: 0;
+        font-family: "MF YuanHei", "MF YuanHei (Noncommercial)",
+          "PingFang SC", sans-serif;
+        font-size: clamp(36px, 12vw, var(--fig-title-size));
+        font-weight: 400;
+        line-height: 0;
+        text-align: center;
+        color: #000;
+        text-shadow: var(--fig-title-shadow);
+        white-space: nowrap;
+      }
+      .fig-ribbon__title .t1 {
+        line-height: 87.184px;
+      }
+      .fig-ribbon__title .t2 {
+        line-height: 87.18px;
+        color: var(--fig-accent);
+      }
+
+      /* 0:10 副标题 — 组 623 内 calc(50%-195.5px)=116px → 相对卡片顶 73px */
+      .fig-headline {
+        position: absolute;
+        left: 50%;
+        top: 73px;
+        transform: translateX(-50%);
+        width: calc(100% - 64px);
+        margin: 0;
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 42px;
+        text-align: center;
+        color: var(--fig-headline);
+      }
+
+      /* 0:26 组 101507 — 470×148，组顶 222px → 相对卡片顶 179px */
+      .fig-form {
+        position: absolute;
+        left: 50%;
+        top: 179px;
+        transform: translateX(-50%);
+        width: min(470px, calc(100% - 48px));
+        height: 148px;
+      }
+
+      .fig-form__inner {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 148px;
+      }
+
+      /* DOM 顺序：先 .fig-input（index 0），后 .fig-label；网格将标签放在左列、输入框在右列，与稿一致 */
+      .fig-field-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: 112px var(--fig-field-w);
+        gap: 4px;
+        align-items: center;
+        height: var(--fig-field-h);
+        width: 470px;
+        max-width: 100%;
+      }
+      .fig-field-row--a {
+        top: 0;
+      }
+      .fig-field-row--b {
+        bottom: 3px;
+      }
+      .fig-field-row .fig-input {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+        width: var(--fig-field-w);
+        max-width: var(--fig-field-w);
+      }
+      .fig-field-row .fig-label {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: start;
+        width: 112px;
+        max-width: 112px;
+        text-align: left;
+      }
+
+      .fig-label {
+        display: block;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 63px;
+        color: rgba(0, 0, 0, 0.9);
+      }
+
+      .fig-input {
+        height: var(--fig-field-h);
+        border-radius: var(--fig-field-radius);
+        background: rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        font-size: 24px;
+        line-height: 63px;
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .fig-input--select {
+        justify-content: space-between;
+        padding-right: 24px;
+      }
+
+      .fig-chevron {
+        width: 11px;
+        height: 22px;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .fig-chevron img {
+        width: 11px;
+        height: auto;
+        max-height: 22px;
+        display: block;
+        opacity: 0.65;
+      }
+      .fig-chevron-fallback {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 11px;
+        height: 11px;
+        margin-top: -5px;
+        border-right: 2px solid rgba(0, 0, 0, 0.35);
+        border-bottom: 2px solid rgba(0, 0, 0, 0.35);
+        transform: rotate(-45deg);
+        opacity: 0.6;
+      }
+
+      /* 0:24 主按钮 + 0:25 文案 — 相对卡片 bottom 96 */
+      .fig-cta {
+        position: absolute;
+        left: 50%;
+        bottom: 96px;
+        transform: translateX(-50%);
+        width: min(var(--fig-btn-w), calc(100% - 80px));
+        height: var(--fig-btn-h);
+        border: none;
+        border-radius: var(--fig-btn-radius);
+        padding: 0;
+        cursor: pointer;
+        background: var(--fig-gradient);
+        box-shadow: 0 4px 16px rgba(255, 80, 55, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: inherit;
+        font-size: 32px;
+        font-weight: 600;
+        line-height: 63px;
+        color: #fff;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .fig-cta:active {
+        transform: translateX(-50%) scale(0.98);
+      }
+
+      /* 0:23 备注 — 稿中为 calc(50%+211.5px)，相对父级高度 580 时 = 501.5px，落在主按钮之下 */
+      .fig-note {
+        position: absolute;
+        left: 50%;
+        top: calc(50% + 211.5px);
+        transform: translateX(-50%);
+        margin: 0;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 63px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.7);
+        white-space: nowrap;
+      }
+
+      /* 0:39 关闭 — 63.8px（稿中组 9525） */
+      .fig-close {
+        position: relative;
+        margin-top: 24px;
+        width: 63.8px;
+        height: 63.8px;
+        padding: 0;
+        border: none;
+        cursor: pointer;
+        background: transparent;
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .fig-close__ring {
+        position: absolute;
+        inset: 0;
+      }
+      .fig-close__ring img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .fig-close__x {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 26px;
+        height: 2px;
+        background: #d8d8d8;
+        border-radius: 1px;
+        z-index: 1;
+      }
+      .fig-close__x--a {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+      .fig-close__x--b {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      @media (max-width: 420px) {
+        .fig-headline {
+          font-size: clamp(22px, 5.5vw, 30px);
+        }
+        .fig-label,
+        .fig-input {
+          font-size: 20px;
+        }
+        .fig-ribbon__title .t1,
+        .fig-ribbon__title .t2 {
+          line-height: 1.2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Figma 资源：需 Figma Desktop 提供 localhost:3845 -->
+    <div class="fig-page" data-name="弹窗1" data-node-id="0:2">
+      <div class="fig-overlay" data-node-id="0:3" aria-hidden="true"></div>
+
+      <div class="fig-stage">
+        <div class="fig-group" data-node-id="0:4">
+          <div class="fig-ribbon" data-node-id="0:11">
+            <img
+              class="fig-ribbon__img--a"
+              src="http://localhost:3845/assets/d4012cc8a0895519875a1a2f83209b9f70b2e91b.png"
+              alt=""
+              width="50"
+              height="80"
+            />
+            <img
+              class="fig-ribbon__img--b"
+              src="http://localhost:3845/assets/078352999b2bc07378962ef18a8e5fc40d1bf47d.png"
+              alt=""
+              width="49"
+              height="82"
+            />
+            <p class="fig-ribbon__title" data-node-id="0:12">
+              <span class="t1">填写</span><span class="t2">信息</span>
+            </p>
+          </div>
+
+          <div class="fig-card" data-node-id="0:5">
+            <div class="fig-card-mask" data-node-id="0:6" aria-hidden="true">
+              <img
+                src="http://localhost:3845/assets/8bd83167efa457f037b4a95acd062f6c42a47015.svg"
+                alt=""
+                width="534"
+                height="580"
+              />
+            </div>
+            <div class="fig-card-content">
+              <h1 class="fig-headline" data-node-id="0:10">
+                留电话参与活动领焕新大礼
+              </h1>
+
+              <div class="fig-form" data-node-id="0:26">
+                <div class="fig-form__inner" data-node-id="0:28">
+                  <div class="fig-field-row fig-field-row--a">
+                    <div class="fig-input" data-node-id="0:30">
+                      <span data-node-id="0:31">请输入联系人手机号</span>
+                    </div>
+                    <span class="fig-label" data-node-id="0:29">联系方式</span>
+                  </div>
+                  <div class="fig-field-row fig-field-row--b">
+                    <div class="fig-input fig-input--select" data-node-id="0:33">
+                      <span data-node-id="0:27">默认附近门店</span>
+                      <span class="fig-chevron" data-node-id="0:34">
+                        <img
+                          src="http://localhost:3845/assets/f303e8fcf871959fbe9e150ab343d8b6928bbc83.svg"
+                          alt=""
+                          width="11"
+                          height="22"
+                        />
+                        <span class="fig-chevron-fallback"></span>
+                      </span>
+                    </div>
+                    <span class="fig-label" data-node-id="0:32">选择门店</span>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" class="fig-cta" data-node-id="0:24">
+                <span data-node-id="0:25">提交申请</span>
+              </button>
+
+              <p class="fig-note" data-node-id="0:23">
+                备注备注备注备注备注备注备注备注
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="fig-close"
+          data-node-id="0:39"
+          aria-label="关闭"
+        >
+          <span class="fig-close__ring" data-node-id="0:43">
+            <img
+              src="http://localhost:3845/assets/b6b08b9c98a2b7515f3547e961ee44cb4dbc4972.svg"
+              alt=""
+              width="64"
+              height="64"
+            />
+          </span>
+          <span class="fig-close__x fig-close__x--a" aria-hidden="true"></span>
+          <span class="fig-close__x fig-close__x--b" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var chev = document.querySelector(".fig-chevron img");
+        var fb = document.querySelector(".fig-chevron-fallback");
+        if (chev && fb) {
+          chev.addEventListener("error", function () {
+            chev.style.display = "none";
+            fb.style.display = "block";
+          });
+        }
+        document.querySelectorAll(".fig-ribbon img").forEach(function (img) {
+          img.addEventListener("error", function () {
+            this.style.display = "none";
+          });
+        });
+        var mask = document.querySelector(".fig-card-mask img");
+        if (mask) {
+          mask.addEventListener("error", function () {
+            var w = this.closest(".fig-card-mask");
+            if (w) w.style.display = "none";
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
