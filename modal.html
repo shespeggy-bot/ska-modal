@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>弹窗1 — Figma 0:2</title>
+    <style>
+      /* Figma「弹窗1」0:2 — 与 Dev Mode 导出结构对齐 */
+      :root {
+        --fig-bg: #757575;
+        --fig-overlay: rgba(0, 0, 0, 0.52);
+        --fig-artboard-w: 750px;
+        --fig-group-w: 534px;
+        --fig-group-h: 623px;
+        --fig-card-h: 580px;
+        --fig-card-top: 43px;
+        --fig-card-radius: 24px;
+        --fig-accent: #ff5037;
+        --fig-btn-w: 358px;
+        --fig-btn-h: 80px;
+        --fig-btn-radius: 64px;
+        --fig-field-w: 354px;
+        --fig-field-h: 60px;
+        --fig-field-radius: 8px;
+        --fig-gradient: linear-gradient(
+          125deg,
+          #ffaedb 0%,
+          #ff0000 53%,
+          #ff7f00 100%
+        );
+        --fig-ribbon-left: 82px;
+        --fig-ribbon-w: 366px;
+        --fig-ribbon-h: 100px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        font-family: "PingFang SC", -apple-system, system-ui, "Microsoft YaHei",
+          sans-serif;
+        background: var(--fig-bg);
+        color: #000;
+      }
+
+      .fig-page {
+        position: relative;
+        width: 100%;
+        max-width: var(--fig-artboard-w);
+        min-height: 100dvh;
+        margin: 0 auto;
+        background: var(--fig-bg);
+        overflow: hidden;
+      }
+
+      .fig-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        min-height: 100dvh;
+        min-height: 100%;
+        background: var(--fig-overlay);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .fig-stage {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        padding: max(24px, env(safe-area-inset-top))
+          max(16px, env(safe-area-inset-right))
+          max(24px, env(safe-area-inset-bottom))
+          max(16px, env(safe-area-inset-left));
+      }
+
+      /* 组 534×623 — 子节点坐标均相对本容器 */
+      .fig-group {
+        position: relative;
+        width: min(var(--fig-group-w), 100%);
+        height: var(--fig-group-h);
+        flex-shrink: 0;
+      }
+
+      /* 白底卡片：组内 top 43（非贴底），43+580=623 */
+      .fig-card {
+        position: absolute;
+        left: 0;
+        top: var(--fig-card-top);
+        width: 100%;
+        height: var(--fig-card-h);
+        border-radius: var(--fig-card-radius);
+        background: #fff;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      /* 导出中的顶部柔光圆（模糊） */
+      .fig-card-blobs {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--fig-card-radius);
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .fig-blob {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        border-radius: 9999px;
+        filter: blur(60.96px);
+      }
+      .fig-blob--r {
+        left: 218px;
+        top: -276px;
+        background: rgba(255, 220, 230, 0.4);
+        box-shadow: 121.92px 121.92px 121.92px rgba(0, 0, 0, 0);
+      }
+      .fig-blob--l {
+        left: -94px;
+        top: -270px;
+        background: rgba(255, 209, 204, 0.7);
+        box-shadow: 121.92px 121.92px 121.92px rgba(0, 0, 0, 0);
+      }
+
+      .fig-card-mask {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--fig-card-radius);
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .fig-card-mask img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+      }
+
+      /* 366×100，left 82 top 0 */
+      .fig-ribbon {
+        position: absolute;
+        left: var(--fig-ribbon-left);
+        top: 0;
+        z-index: 6;
+        width: min(var(--fig-ribbon-w), calc(100% - var(--fig-ribbon-left)));
+        height: var(--fig-ribbon-h);
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .fig-ribbon__img--a {
+        position: absolute;
+        left: 0;
+        top: 5px;
+        width: 50px;
+        height: 80px;
+        object-fit: cover;
+      }
+      .fig-ribbon__img--b {
+        position: absolute;
+        left: 320px;
+        top: 3px;
+        width: 49px;
+        height: 82px;
+        object-fit: cover;
+      }
+
+      .fig-ribbon__title {
+        position: absolute;
+        left: 69px;
+        top: 12px;
+        margin: 0;
+        text-align: center;
+        font-family: "MF YuanHei", "MF YuanHei (Noncommercial)",
+          "PingFang SC", sans-serif;
+        font-size: clamp(36px, 11vw, 58.12px);
+        font-weight: 400;
+        white-space: nowrap;
+      }
+      .fig-ribbon__title .t1 {
+        color: #000;
+        font-size: 58.12px;
+        line-height: 87.18px;
+        text-shadow: 0 3px 3px rgba(100, 100, 100, 0.13);
+      }
+      .fig-ribbon__title .t2 {
+        color: #ff5037;
+        font-size: 58.12px;
+        line-height: 87.18px;
+        text-shadow: 0 3px 3px rgba(100, 100, 100, 0.13);
+      }
+
+      /* 副标题：left 87 top 116 */
+      .fig-headline {
+        position: absolute;
+        left: 87px;
+        top: 116px;
+        right: 87px;
+        margin: 0;
+        text-align: center;
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 42px;
+        color: #020814;
+        z-index: 5;
+      }
+
+      /* 表单区 470×148，left 32 top 222 */
+      .fig-form {
+        position: absolute;
+        left: 32px;
+        top: 222px;
+        width: min(470px, calc(100% - 64px));
+        height: 148px;
+        z-index: 5;
+      }
+
+      .fig-form__inner {
+        position: relative;
+        width: 100%;
+        height: 148px;
+      }
+
+      .fig-label {
+        position: absolute;
+        left: 0;
+        width: 112px;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 63px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.9);
+      }
+      .fig-label--a {
+        top: 0;
+      }
+      .fig-label--b {
+        top: 85px;
+      }
+
+      .fig-input {
+        position: absolute;
+        left: 116px;
+        width: var(--fig-field-w);
+        max-width: calc(100% - 116px);
+        height: var(--fig-field-h);
+        border-radius: var(--fig-field-radius);
+        background: rgba(0, 0, 0, 0.02);
+        outline: 1px solid rgba(0, 0, 0, 0.06);
+        border: none;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 63px;
+        color: rgba(0, 0, 0, 0.4);
+        font-family: inherit;
+      }
+      .fig-input--a {
+        top: 0;
+      }
+      .fig-input--b {
+        top: 85px;
+      }
+      .fig-input--select {
+        justify-content: space-between;
+        padding-right: 24px;
+      }
+
+      .fig-chevron {
+        width: 11px;
+        height: 22px;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .fig-chevron img {
+        width: 11px;
+        height: auto;
+        max-height: 22px;
+        display: block;
+        opacity: 0.85;
+      }
+      .fig-chevron-fallback {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 11px;
+        height: 11px;
+        margin-top: -5px;
+        border-right: 2px solid #3d3d3d;
+        border-bottom: 2px solid #3d3d3d;
+        transform: rotate(-45deg);
+      }
+
+      /* 主按钮 left 88 top 447 */
+      .fig-cta {
+        position: absolute;
+        left: 88px;
+        top: 447px;
+        width: min(var(--fig-btn-w), calc(100% - 176px));
+        height: var(--fig-btn-h);
+        border: none;
+        border-radius: var(--fig-btn-radius);
+        padding: 0;
+        cursor: pointer;
+        background: var(--fig-gradient);
+        box-shadow: 0 4px 16px rgba(255, 80, 55, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: inherit;
+        font-size: 32px;
+        font-weight: 600;
+        line-height: 63px;
+        color: rgba(0, 0, 0, 1);
+        z-index: 5;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .fig-cta span {
+        color: rgba(0, 0, 0, 1);
+      }
+      .fig-cta:active {
+        transform: scale(0.98);
+      }
+
+      /* 备注 left 107 top 523 */
+      .fig-note {
+        position: absolute;
+        left: 107px;
+        top: 523px;
+        right: 107px;
+        margin: 0;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 63px;
+        color: rgba(0, 0, 0, 0.7);
+        z-index: 5;
+      }
+
+      /* 关闭：稿中圆环 #BBBDBA 2.2px */
+      .fig-close {
+        position: relative;
+        margin-top: 24px;
+        width: 63.8px;
+        height: 63.8px;
+        padding: 0;
+        border: none;
+        cursor: pointer;
+        background: transparent;
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .fig-close__ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: transparent;
+      }
+      .fig-close__ring--fallback {
+        border: 2.2px solid #bbbdba;
+      }
+      .fig-close__ring img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .fig-close__x {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 20.6px;
+        height: 2px;
+        background: #d8d8d8;
+        border-radius: 1px;
+        z-index: 1;
+      }
+      .fig-close__x--a {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+      .fig-close__x--b {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      @media (max-width: 560px) {
+        .fig-group {
+          height: auto;
+          min-height: var(--fig-group-h);
+        }
+        .fig-headline,
+        .fig-form,
+        .fig-cta,
+        .fig-note {
+          position: relative;
+          left: auto;
+          top: auto;
+          right: auto;
+          width: 100%;
+        }
+        .fig-headline {
+          margin-top: 96px;
+          padding: 0 16px;
+        }
+        .fig-form {
+          margin-top: 24px;
+          height: auto;
+          min-height: 148px;
+        }
+        .fig-form__inner {
+          height: auto;
+          min-height: 148px;
+          padding-bottom: 8px;
+        }
+        .fig-label--b,
+        .fig-input--b {
+          top: auto;
+          position: relative;
+          left: auto;
+          margin-top: 16px;
+        }
+        .fig-label--a,
+        .fig-input--a {
+          position: relative;
+          left: auto;
+          top: auto;
+        }
+        .fig-input {
+          left: 0;
+          max-width: 100%;
+          width: 100%;
+          margin-top: 8px;
+        }
+        .fig-label {
+          position: relative;
+          width: 100%;
+          text-align: left;
+        }
+        .fig-cta {
+          margin-top: 24px;
+          width: min(var(--fig-btn-w), 100%);
+          margin-left: auto;
+          margin-right: auto;
+          display: flex;
+          left: auto;
+        }
+        .fig-note {
+          margin-top: 16px;
+          position: relative;
+        }
+        .fig-card {
+          position: relative;
+          top: auto;
+          margin-top: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fig-page" data-name="弹窗1" data-node-id="0:2">
+      <div class="fig-overlay" data-node-id="0:3" aria-hidden="true"></div>
+
+      <div class="fig-stage">
+        <div class="fig-group" data-node-id="0:4">
+          <div class="fig-card" data-node-id="0:5">
+            <div class="fig-card-blobs" aria-hidden="true">
+              <div class="fig-blob fig-blob--r"></div>
+              <div class="fig-blob fig-blob--l"></div>
+            </div>
+            <div class="fig-card-mask" data-node-id="0:6" aria-hidden="true">
+              <img
+                src="http://localhost:3845/assets/8bd83167efa457f037b4a95acd062f6c42a47015.svg"
+                alt=""
+                width="534"
+                height="580"
+              />
+            </div>
+          </div>
+
+          <div class="fig-ribbon" data-node-id="0:11">
+            <img
+              class="fig-ribbon__img--a"
+              src="http://localhost:3845/assets/d4012cc8a0895519875a1a2f83209b9f70b2e91b.png"
+              alt=""
+              width="50"
+              height="80"
+            />
+            <img
+              class="fig-ribbon__img--b"
+              src="http://localhost:3845/assets/078352999b2bc07378962ef18a8e5fc40d1bf47d.png"
+              alt=""
+              width="49"
+              height="82"
+            />
+            <p class="fig-ribbon__title" data-node-id="0:12">
+              <span class="t1">填写</span><span class="t2">信息</span>
+            </p>
+          </div>
+
+          <h1 class="fig-headline" data-node-id="0:10">
+            留电话参与活动领焕新大礼
+          </h1>
+
+          <div class="fig-form" data-node-id="0:26">
+            <div class="fig-form__inner" data-node-id="0:28">
+              <span class="fig-label fig-label--a" data-node-id="0:29"
+                >联系方式</span
+              >
+              <div class="fig-input fig-input--a" data-node-id="0:30">
+                <span data-node-id="0:31">请输入联系人手机号</span>
+              </div>
+              <span class="fig-label fig-label--b" data-node-id="0:32"
+                >选择门店</span
+              >
+              <div class="fig-input fig-input--b fig-input--select" data-node-id="0:33">
+                <span data-node-id="0:27">默认附近门店</span>
+                <span class="fig-chevron" data-node-id="0:34">
+                  <img
+                    src="http://localhost:3845/assets/f303e8fcf871959fbe9e150ab343d8b6928bbc83.svg"
+                    alt=""
+                    width="11"
+                    height="22"
+                  />
+                  <span class="fig-chevron-fallback"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="fig-cta" data-node-id="0:24">
+            <span data-node-id="0:25">提交申请</span>
+          </button>
+
+          <p class="fig-note" data-node-id="0:23">
+            备注备注备注备注备注备注备注备注
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="fig-close"
+          data-node-id="0:39"
+          aria-label="关闭"
+        >
+          <span class="fig-close__ring" data-node-id="0:43">
+            <img
+              src="http://localhost:3845/assets/b6b08b9c98a2b7515f3547e961ee44cb4dbc4972.svg"
+              alt=""
+              width="64"
+              height="64"
+            />
+          </span>
+          <span class="fig-close__x fig-close__x--a" aria-hidden="true"></span>
+          <span class="fig-close__x fig-close__x--b" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var chev = document.querySelector(".fig-chevron img");
+        var fb = document.querySelector(".fig-chevron-fallback");
+        if (chev && fb) {
+          chev.addEventListener("error", function () {
+            chev.style.display = "none";
+            fb.style.display = "block";
+          });
+        }
+        document.querySelectorAll(".fig-ribbon img").forEach(function (img) {
+          img.addEventListener("error", function () {
+            this.style.display = "none";
+          });
+        });
+        var mask = document.querySelector(".fig-card-mask img");
+        if (mask) {
+          mask.addEventListener("error", function () {
+            var w = this.closest(".fig-card-mask");
+            if (w) w.style.display = "none";
+          });
+        }
+        var closeRing = document.querySelector(".fig-close__ring img");
+        if (closeRing) {
+          closeRing.addEventListener("error", function () {
+            this.style.display = "none";
+            var ring = this.closest(".fig-close__ring");
+            if (ring) ring.classList.add("fig-close__ring--fallback");
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
